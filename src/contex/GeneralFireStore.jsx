@@ -1,5 +1,5 @@
 import { createContext,useState,useEffect } from "react";
-import {collection,addDoc,getDocs, doc,onSnapshot,deleteDoc} from 'firebase/firestore'
+import {collection,addDoc,getDocs, doc,onSnapshot,deleteDoc,updateDoc} from 'firebase/firestore'
 import * as firebaseApp from '../firebase/configFirebase'
 import {ref,uploadBytesResumable,getDownloadURL,deleteObject} from 'firebase/storage'
 export const  FirestoreContext = createContext();
@@ -38,6 +38,22 @@ const FirestoreProvider = ({children}) =>{
    
     
     //TODOS modify Products
+    const modifyProduct = async(newData) =>{
+        console.log(newData)
+        //check if new image exist
+
+        //  if new image exist 
+        //   --- find image url image and delete it
+        //    ------ upload our new image
+        //      --- get the new url from the new image
+        //         ----update my file .
+
+        const refToTheDocumnet =  doc(firebaseApp.firestore,'products',newData.id)
+        const dataClean = {...newData}
+        delete dataClean.id
+        updateDoc(refToTheDocumnet,{...dataClean})
+    }
+
     //DELETE produc
     const deleteProduct = async (id,imageToDelete) =>{
         //console.log(`i will delete the product with the id === ${id}`)
@@ -55,7 +71,8 @@ const FirestoreProvider = ({children}) =>{
     const data = {
         allProducts:allProducts,
         addProduct:addProduct,
-        deleteProduct:deleteProduct
+        deleteProduct:deleteProduct,
+        modifyProduct:modifyProduct
     }
 
     return(

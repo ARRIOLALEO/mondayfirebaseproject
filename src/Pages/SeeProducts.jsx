@@ -2,7 +2,7 @@ import React,{useContext,useState} from 'react'
 import {FirestoreContext} from '../contex/GeneralFireStore'
 import {Grid,Button,Dialog,DialogContent,DialogTitle,FormControl,Input} from "@mui/material"
 export default function SeeProducts() {
-  const {allProducts,deleteProduct} = useContext(FirestoreContext)
+  const {allProducts,deleteProduct,modifyProduct} = useContext(FirestoreContext)
 
 
   const handlerDelete = (id,imageToDelete) =>{
@@ -14,13 +14,23 @@ export default function SeeProducts() {
     console.log(imageToDelete)
    // deleteProduct(id,imageToDelete)
 
-    
-   // https://firebasestorage.googleapis.com/v0/b/reactapp-3f238.appspot.com/o/images%2Fimage.png?alt=media&token=b70e9731-3324-467b-b481-38096c36355e
-  }
+    }
 
   const [dialogOpen,setDialogOpen] = useState(false)
+  const [dataToChange,setDataToChange] = useState({})
   const handlerClose = () =>{
     setDialogOpen(!dialogOpen)
+  }
+  const handlerEdit = (data) =>{
+    setDataToChange(data)
+    setDialogOpen(true)
+    
+  }
+
+  // this function will save our data if we change it
+  const updateProduct = () =>{
+    // i need to send that that to my firestore
+    modifyProduct(dataToChange)
   }
   return (
 <>
@@ -30,7 +40,7 @@ export default function SeeProducts() {
         <Grid item sx={2}>{data.name}</Grid>
         <Grid item sx={2}>{data.price}</Grid>
         <Grid item sx={2}><img src={data.img} width="100"/></Grid>
-        <Grid item sx={2}><Button onClick={()=> setDialogOpen(true)} >Modify</Button></Grid>
+        <Grid item sx={2}><Button onClick={()=> handlerEdit({...data,id:id}) } >Modify</Button></Grid>
         <Grid item sx={2}><Button onClick={()=> handlerDelete(id,data.img)}>Delete</Button></Grid>
         </>
       )
@@ -40,7 +50,18 @@ export default function SeeProducts() {
     <Dialog open={dialogOpen} onClose={handlerClose}>
       <DialogTitle>Edit This Product</DialogTitle>
       <DialogContent>
-        some content
+
+        <FormControl fullWidth>
+        <Input value={dataToChange.name} onChange={(e)=> setDataToChange({...dataToChange,name:e.target.value})}/>
+        </FormControl>
+        <FormControl fullWidth>
+        <Input value={dataToChange.price} onChange={(e)=> setDataToChange({...dataToChange,price:e.target.value})}/>
+        </FormControl>
+        <FormControl fullWidth>
+        <Input type='file' onChange={(e)=> setDataToChange({...dataToChange,newImage: e.target.files[0]})}/>
+        </FormControl>
+        <Button variant='contained' onClick={updateProduct}>Save Changes</Button>
+        <Button variant='contained' style={{backgroundColor:"red"}} onClick={handlerClose}>Cancel</Button>
       </DialogContent>
     </Dialog>
     </>
