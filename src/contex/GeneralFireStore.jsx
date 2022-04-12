@@ -1,7 +1,7 @@
 import { createContext,useState,useEffect } from "react";
-import {collection,addDoc,getDocs, doc,onSnapshot} from 'firebase/firestore'
+import {collection,addDoc,getDocs, doc,onSnapshot,deleteDoc} from 'firebase/firestore'
 import * as firebaseApp from '../firebase/configFirebase'
-import {ref,uploadBytesResumable,getDownloadURL} from 'firebase/storage'
+import {ref,uploadBytesResumable,getDownloadURL,deleteObject} from 'firebase/storage'
 export const  FirestoreContext = createContext();
 
 const refCollection = collection(firebaseApp.firestore,'products')
@@ -38,11 +38,24 @@ const FirestoreProvider = ({children}) =>{
    
     
     //TODOS modify Products
-    //DELETE producs
+    //DELETE produc
+    const deleteProduct = async (id,imageToDelete) =>{
+        //console.log(`i will delete the product with the id === ${id}`)
+        await deleteDoc(doc(firebaseApp.firestore,'products',id))
+        deleteImage(imageToDelete)
+
+
+    }
+
+    const deleteImage = (imageName) =>{
+        const refToImage = ref(firebaseApp.storage,`images/${imageName}`)
+        deleteObject(refToImage).then(()=>{console.log("the image was delete")}).catch((err)=> console.log(err.message))
+    }
 
     const data = {
         allProducts:allProducts,
-        addProduct:addProduct
+        addProduct:addProduct,
+        deleteProduct:deleteProduct
     }
 
     return(

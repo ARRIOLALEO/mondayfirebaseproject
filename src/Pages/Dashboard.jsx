@@ -13,7 +13,7 @@ export default function Dashboard() {
       <>
       <Header/>
       <Grid container spacing={2}>
-        <Grid item sx={2} md={4}>
+        <Grid item sx={2} md={3}>
           <List>
             <ListItemButton>
               <Link to="see-produts">All Products</Link>
@@ -29,7 +29,7 @@ export default function Dashboard() {
             </ListItemButton>
           </List>
         </Grid>
-        <Grid item sx={2} md={4}><Outlet/></Grid>
+        <Grid item sx={2} md={5}><Outlet/></Grid>
       </Grid>
       </>):(<Navigate to="/login"/>)
       }
