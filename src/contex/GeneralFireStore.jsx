@@ -5,9 +5,11 @@ import {ref,uploadBytesResumable,getDownloadURL,deleteObject} from 'firebase/sto
 export const  FirestoreContext = createContext();
 
 const refCollection = collection(firebaseApp.firestore,'products')
+const refCollectionOrders = collection(firebaseApp.firestore,'orders')
 
 const FirestoreProvider = ({children}) =>{
     const [allProducts,setAllProducts] = useState([])
+    const [allOrders,setAllOrders] = useState([])
 
     // this function create my product 
     const addProduct = async(newProduct,image)=>{
@@ -21,6 +23,11 @@ const FirestoreProvider = ({children}) =>{
         )
     }
 
+    // save or create a new order 
+    const saveOrder = async(ourcard,userData) =>{
+        addDoc(refCollectionOrders,{...ourcard,...userData})
+    }
+
     //  this function get the data from firestore and save it in my state
     const getAllProducts = async () =>{
         const productsFromFirestore = await getDocs(refCollection)
@@ -30,6 +37,13 @@ const FirestoreProvider = ({children}) =>{
             id:product.id
         })))
     }
+
+    // this function will get all the orders 
+    const getAllOrders = async () =>{
+        const ordersFromFirestore = await getDocs(refCollectionOrders)
+        setAllOrders(ordersFromFirestore.docs.map(order=>({data:order.data(),id:order.id})))
+    }
+
     useEffect(()=>{
         getAllProducts()
     },[])
@@ -72,7 +86,10 @@ const FirestoreProvider = ({children}) =>{
         allProducts:allProducts,
         addProduct:addProduct,
         deleteProduct:deleteProduct,
-        modifyProduct:modifyProduct
+        modifyProduct:modifyProduct,
+        saveOrder:saveOrder,
+        getAllOrders:getAllOrders,
+        allOrders:allOrders
     }
 
     return(
